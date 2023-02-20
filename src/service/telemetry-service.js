@@ -12,6 +12,7 @@ class TelemetryService {
         this.dispatcher = this.config.localStorageEnabled === 'true' ? new Dispatcher(config) : undefined;
     }
     dispatch(req, res) {
+        console.log("test")
         const message = req.body;
         message.did = req.get('x-device-id');
         message.channel = req.get('x-channel-id');
