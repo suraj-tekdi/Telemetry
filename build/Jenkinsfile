@@ -1,3 +1,4 @@
+
 node() {
     withCredentials([string(credentialsId: 'docker_server', variable: 'docker_server')]) {
         properties([
@@ -17,7 +18,11 @@ node() {
 
     stage('docker-build') {
         sh '''
-        docker build -t $docker_server/$docker_repo:$commit_id .
+        docker build -f ./Dockerfile.Build -t $docker_server/$docker_repo:$commit_id .
+		docker run --name=$docker_server/$docker_repo:$commit_id 
+		containerid=$(docker ps -aqf "name=$docker_server/$docker_repo:$commit_id .")
+		docker cp $containerid:/opt/telemetry-service.zip telemetry-service.zip
+		docker rm $containerid
         '''
         if (env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master') {
             sh '''
