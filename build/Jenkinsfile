@@ -1,4 +1,3 @@
-
 node() {
     withCredentials([string(credentialsId: 'docker_server', variable: 'docker_server')]) {
         properties([
@@ -23,6 +22,7 @@ node() {
 		containerid=$(docker ps -aqf "name=$docker_server/$docker_repo:$commit_id .")
 		docker cp $containerid:/opt/telemetry-service.zip telemetry-service.zip
 		docker rm $containerid
+		docker build -f ./Dockerfile -t $docker_server/$docker_repo:$commit_id .
         '''
         if (env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master') {
             sh '''
