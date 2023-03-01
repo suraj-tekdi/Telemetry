@@ -45,4 +45,5 @@ node() {
          if (env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master') { 
                 build job: 'ULP/deploy-staging/telemetry/', parameters: [string(name: 'tag', value: 'latest')]
          }
+   }
 }
