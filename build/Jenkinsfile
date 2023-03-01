@@ -18,8 +18,8 @@ node() {
     stage('docker-build') {
         sh '''
         docker build -f ./Dockerfile.Build -t $docker_server/$docker_repo:$commit_id .
-		docker run --name=$docker_server/$docker_repo:$commit_id 
-		containerid=$(docker ps -aqf "name=$docker_server/$docker_repo:$commit_id .")
+		docker run --name=test $docker_server/$docker_repo:$commit_id 
+		containerid=$(docker ps -aqf "name=test")
 		docker cp $containerid:/opt/telemetry-service.zip telemetry-service.zip
 		docker rm $containerid
 		docker build -f ./Dockerfile -t $docker_server/$docker_repo:$commit_id .
