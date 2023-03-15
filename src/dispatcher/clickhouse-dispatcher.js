@@ -43,9 +43,12 @@ const winston = require('winston');
 //clickhouse();
 
 const client = client_1.createClient({
-  host: process.env.CLICKHOUSE_HOST ?? 'http://localhost:8123',
-  username: process.env.CLICKHOUSE_USER ?? 'default',
-  password: process.env.CLICKHOUSE_PASSWORD ?? '1234',
+  // host: process.env.CLICKHOUSE_HOST ?? 'http://localhost:8123',
+  // username: process.env.CLICKHOUSE_USER ?? 'default',
+  // password: process.env.CLICKHOUSE_PASSWORD ?? '1234',
+  host: process.env.CLICKHOUSE_HOST ?? 'http://64.227.185.154:8123',
+  username: process.env.CLICKHOUSE_USER ?? 'clickhouse',
+  password: process.env.CLICKHOUSE_PASSWORD ?? '*!73uK*9xLEsnhIR',
 })
 
 
