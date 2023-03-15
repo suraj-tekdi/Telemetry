@@ -1,8 +1,10 @@
 const winston = require('winston');
-    require('winston-daily-rotate-file');
-    require('./kafka-dispatcher');
-    require('./cassandra-dispatcher');
-    require('./clickhouse-dispatcher');
+require('winston-daily-rotate-file');
+require('./kafka-dispatcher');
+require('./cassandra-dispatcher');
+require('./clickhouse-dispatcher');
+
+const getData = require('./clickhouse-dispatcher');
 
 const defaultFileOptions = {
     filename: 'dispatcher-%DATE%.log',
@@ -16,7 +18,7 @@ const defaultFileOptions = {
 class Dispatcher {
     constructor(options) {
         if (!options) throw new Error('Dispatcher options are required');
-        this.logger = new(winston.Logger)({level: 'info'});
+        this.logger = new (winston.Logger)({ level: 'info' });
         this.options = options;
         if (this.options.dispatcher == 'kafka') {
             console.log("inside kafka")
@@ -38,14 +40,14 @@ class Dispatcher {
         } else { // Log to console
             console.log("inside else")
             this.options.dispatcher = 'console'
-            const config = Object.assign({json: true,stringify: (obj) => JSON.stringify(obj)}, this.options);
+            const config = Object.assign({ json: true, stringify: (obj) => JSON.stringify(obj) }, this.options);
             this.logger.add(winston.transports.Console, config);
             console.log('Console transport enabled !!!');
         }
     }
 
     dispatch(mid, message, callback) {
-        this.logger.log('info', message, {mid: mid}, callback);
+        this.logger.log('info', message, { mid: mid }, callback);
     }
 
     health(callback) {
@@ -56,6 +58,21 @@ class Dispatcher {
         } else { // need to add health method for file/cassandra
             callback(false)
         }
+    }
+
+    getData(callback) {
+        getData.clickhouse((err, res) => {
+            if (err) {
+                console.log("66")
+                callback(null, null);
+            } else if (res) {
+                console.log("69")
+                callback(null, res);
+            } else {
+                console.log("72")
+                callback(null, null);
+            }
+        })
     }
 }
 

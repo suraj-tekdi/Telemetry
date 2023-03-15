@@ -50,6 +50,8 @@ class TelemetryService {
     health(req, res) {
         if (this.config.localStorageEnabled === 'true') {
             this.dispatcher.health((healthy) => {
+                console.log("healthy", healthy)
+                console.log(this.dispatcher.health)
                 if (healthy)
                     this.sendSuccess(res, { id: 'api.health' });
                 else
@@ -103,6 +105,29 @@ class TelemetryService {
             headers: headers,
             body: data
         };
+    }
+    getData(req, res) {
+        this.dispatcher.getData((err, data) => {
+            if (err) {
+                
+            } else if (data) {
+                console.log("112")
+                res.status(200).json({
+                    statusCode: 3,
+                    success: true,
+                    message: 'Success',
+                    result: data
+                });
+            } else {
+                
+                res.status(200).json({
+                    statusCode: 3,
+                    success: false,
+                    message: 'Success',
+                    result: null
+                });
+            }
+        })
     }
 }
 

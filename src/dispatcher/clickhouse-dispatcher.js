@@ -34,7 +34,7 @@ const winston = require('winston');
 //     query: 'SELECT * FROM my_table',
 //     format: 'JSONEachRow',
 //   })
-//   const dataset = await resultSet.json()
+//   const dataset = await resultSet.json()  SELECT * FROM test_db
 
 //   console.log("dataset", dataset)
 
@@ -80,6 +80,28 @@ class ClickhouseDispatcher extends winston.Transport {
   }
 }
 
+async function clickhouse(callback) {
+
+  const resultSet = await client.query({
+    query: 'SELECT * FROM test_db',
+    format: 'JSONEachRow',
+  })
+  const dataset = await resultSet.json()
+
+  //console.log("dataset", dataset)
+  if(dataset) {
+    console.log("93 dataset")
+    callback(null, dataset)
+  } else {
+    console.log("96 dataset")
+    callback(null, null)
+  }
+  
+  
+
+}
+
+
 winston.transports.clickhouse = ClickhouseDispatcher;
 
-module.exports = { ClickhouseDispatcher };
+module.exports = { ClickhouseDispatcher,  clickhouse};
