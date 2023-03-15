@@ -17,7 +17,12 @@ node() {
 
     stage('docker-build') {
         sh '''
-        docker build -t $docker_server/$docker_repo:$commit_id .
+        docker build -f ./Dockerfile.Build -t $docker_server/$docker_repo:$commit_id .
+		docker run --name=test $docker_server/$docker_repo:$commit_id 
+		containerid=$(docker ps -aqf "name=test")
+		docker cp $containerid:/opt/telemetry-service.zip telemetry-service.zip
+		docker rm $containerid
+		docker build -f ./Dockerfile -t $docker_server/$docker_repo:$commit_id .
         '''
         if (env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master') {
             sh '''
@@ -36,4 +41,9 @@ node() {
             '''
         }
     }
+   stage('Start deploy job with latest tag') {
+         if (env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master') { 
+                build job: 'ULP/deploy-staging/telemetry/', parameters: [string(name: 'tag', value: 'latest')]
+         }
+   }
 }
