@@ -51,13 +51,7 @@ const client = client_1.createClient({
   password: process.env.CLICKHOUSE_PASSWORD ?? '*!73uK*9xLEsnhIR',
 })
 
-
-class ClickhouseDispatcher extends winston.Transport {
-
-  constructor(options) {
-    super();
-
-    client.exec({
+client.exec({
       query: `
         CREATE TABLE IF NOT EXISTS test_db
         (id UInt64, messages String)
@@ -66,9 +60,18 @@ class ClickhouseDispatcher extends winston.Transport {
       `,
     }).then(() => {
       console.log("table created successfully!")
-    })
+    }).catch((error)  => {
+      console.log("error while creating db", error);
+    });
+
+
+class ClickhouseDispatcher extends winston.Transport {
+
+  constructor(options) {
+    super();
   }
   log(level, msg, meta, callback) {
+    
     client.insert({
       table: 'test_db',
       // structure should match the desired format, JSONEachRow in this example
@@ -79,7 +82,9 @@ class ClickhouseDispatcher extends winston.Transport {
     }).then(() => {
       console.log("data inserted successfully!", meta)
       callback()
-    })
+    }).catch((error)  => {
+      console.log("error while inserting data", error);
+    });
   }
 }
 
