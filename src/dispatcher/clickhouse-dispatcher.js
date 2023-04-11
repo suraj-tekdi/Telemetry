@@ -3,66 +3,47 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@clickhouse/client");
 const winston = require('winston');
 
-// async function clickhouse() {
-//   const client = client_1.createClient({
-//     host: process.env.CLICKHOUSE_HOST ?? 'http://localhost:8123',
-//     username: process.env.CLICKHOUSE_USER ?? 'default',
-//     password: process.env.CLICKHOUSE_PASSWORD ?? '1234',
-//   })
-
-//   await client.exec({
-//     query: `
-//     CREATE TABLE IF NOT EXISTS my_table
-//     (id UInt64, name String)
-//     ENGINE MergeTree()
-//     ORDER BY (id)
-//   `,
-//   })
-
-//   await client.insert({
-//     table: 'my_table',
-//     // structure should match the desired format, JSONEachRow in this example
-//     values: [
-//       { id: 42, name: 'foo' },
-//       { id: 42, name: 'bar' },
-//     ],
-//     format: 'JSONEachRow',
-//   })
-
-
-//   const resultSet = await client.query({
-//     query: 'SELECT * FROM my_table',
-//     format: 'JSONEachRow',
-//   })
-//   const dataset = await resultSet.json()  SELECT * FROM test_db
-
-//   console.log("dataset", dataset)
-
-// }
-
-//clickhouse();
 
 const client = client_1.createClient({
-  // host: process.env.CLICKHOUSE_HOST ?? 'http://localhost:8123',
-  // username: process.env.CLICKHOUSE_USER ?? 'default',
-  // password: process.env.CLICKHOUSE_PASSWORD ?? '1234',
-   host: process.env.CLICKHOUSE_HOST ,
-  username: process.env.CLICKHOUSE_USER ,
-  password: process.env.CLICKHOUSE_PASSWORD ,
+  host: process.env.CLICKHOUSE_HOST ?? 'http://localhost:8123',
+  username: process.env.CLICKHOUSE_USER ?? 'default',
+  password: process.env.CLICKHOUSE_PASSWORD ?? '1234',
+  // host: process.env.CLICKHOUSE_HOST ,
+  // username: process.env.CLICKHOUSE_USER ,
+  // password: process.env.CLICKHOUSE_PASSWORD ,
 })
 
 client.exec({
-      query: `
-        CREATE TABLE IF NOT EXISTS test_db
-        (id UInt64, messages String)
-        ENGINE MergeTree()
-        ORDER BY (id)
-      `,
-    }).then(() => {
-      console.log("table created successfully!")
-    }).catch((error)  => {
-      console.log("error while creating db", error);
-    });
+  query: `
+    CREATE TABLE IF NOT EXISTS telemetry
+    (
+      id String, 
+      ver String, 
+      params Tuple(msgid String), 
+      ets UInt64, 
+      events Tuple(
+        eid String,
+        ets UInt64, 
+        ver String, 
+        mid String,
+        actor Tuple(id String, type String),
+        context Tuple(channel String, pdata Tuple(id String, ver String, pid String), env String, sid String, did String, cdata Array(Tuple(id String, type String)), rollup Tuple(l1 String), uid String),
+        object Tuple(id String, ver String, type String),
+        edata Tuple (type String, mode String, pageid String, duration Float64, uri String, subtype String)
+      ), 
+      channel String, 
+      pid String, 
+      mid String, 
+      syncts UInt64
+    )
+    ENGINE MergeTree()
+    ORDER BY (id)
+  `,
+}).then(() => {
+  console.log("table created successfully!")
+}).catch((error) => {
+  console.log("error while creating db", error);
+});
 
 
 class ClickhouseDispatcher extends winston.Transport {
@@ -71,12 +52,16 @@ class ClickhouseDispatcher extends winston.Transport {
     super();
   }
   log(level, msg, meta, callback) {
-    
+
+    console.log("msg", msg)
+    let msgData = JSON.parse(msg)
+    console.log("msgData", msgData)
+
     client.insert({
-      table: 'test_db',
+      table: 'telemetry',
       // structure should match the desired format, JSONEachRow in this example
       values: [
-        { id: 42, messages: JSON.stringify(msg) }
+        { id: msgData.id, ver: msgData.ver, params: msgData.params, ets: msgData.ets, events: msgData.events[0], channel: msgData.channel, pid: msgData.pid, mid: msgData.mid, syncts: msgData.syncts}
       ],
       format: 'JSONEachRow',
     }).then(() => {
@@ -85,31 +70,30 @@ class ClickhouseDispatcher extends winston.Transport {
     }).catch((error)  => {
       console.log("error while inserting data", error);
     });
+
   }
 }
 
 async function clickhouse(callback) {
 
   const resultSet = await client.query({
-    query: 'SELECT * FROM test_db',
+    query: 'SELECT * FROM telemetry',
     format: 'JSONEachRow',
   })
   const dataset = await resultSet.json()
 
   //console.log("dataset", dataset)
-  if(dataset) {
-    console.log("93 dataset")
+  if (dataset) {
     callback(null, dataset)
   } else {
-    console.log("96 dataset")
     callback(null, null)
   }
-  
-  
+
+
 
 }
 
 
 winston.transports.clickhouse = ClickhouseDispatcher;
 
-module.exports = { ClickhouseDispatcher,  clickhouse};
+module.exports = { ClickhouseDispatcher, clickhouse };
