@@ -5,6 +5,7 @@ require('./cassandra-dispatcher');
 require('./clickhouse-dispatcher');
 
 const getData = require('./clickhouse-dispatcher');
+const getCount = require('./clickhouse-dispatcher');
 
 const defaultFileOptions = {
     filename: 'dispatcher-%DATE%.log',
@@ -60,8 +61,8 @@ class Dispatcher {
         }
     }
 
-    getData(callback) {
-        getData.clickhouse((err, res) => {
+    getData(payload, callback) {
+        getData.clickhouse(payload, (err, res) => {
             if (err) {
                 console.log("66")
                 callback(null, null);
@@ -70,6 +71,21 @@ class Dispatcher {
                 callback(null, res);
             } else {
                 console.log("72")
+                callback(null, null);
+            }
+        })
+    }
+
+    getCount(payload, callback) {
+        getCount.clickhouseQuery(payload, (err, res) => {
+            if (err) {
+                console.log("81")
+                callback(null, null);
+            } else if (res) {
+                console.log("83")
+                callback(null, res);
+            } else {
+                console.log("87")
                 callback(null, null);
             }
         })
