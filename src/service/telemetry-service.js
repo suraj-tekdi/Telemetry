@@ -107,8 +107,9 @@ class TelemetryService {
         };
     }
     getData(req, res) {
-        this.dispatcher.getData((err, data) => {
+        this.dispatcher.getData(req.body, (err, data) => {
             if (err) {
+                console.log("error while fetching 112")
                 
             } else if (data) {
                 console.log("112")
@@ -119,12 +120,37 @@ class TelemetryService {
                     result: data
                 });
             } else {
-                
-                res.status(200).json({
+                console.log("else 123")
+                res.status(500).json({
                     statusCode: 3,
                     success: false,
+                    message: 'Unable to fetch data',
+                    result: err
+                });
+            }
+        })
+    }
+
+    getCount(req, res) {
+        this.dispatcher.getCount(req, (err, data) => {
+            if (err) {
+                console.log("error while fetching 137")
+                
+            } else if (data) {
+                console.log("140")
+                res.status(200).json({
+                    statusCode: 3,
+                    success: true,
                     message: 'Success',
-                    result: null
+                    result: data
+                });
+            } else {
+                console.log("else 148")
+                res.status(500).json({
+                    statusCode: 3,
+                    success: false,
+                    message: 'Unable to fetch data',
+                    result: err
                 });
             }
         })
