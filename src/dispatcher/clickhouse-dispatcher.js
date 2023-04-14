@@ -30,7 +30,7 @@ client.exec({
         actor Tuple(id String, type String),
         context Tuple(channel String, pdata Tuple(id String, ver String, pid String), env String, sid String, did String, cdata Array(Tuple(id String, type String)), rollup Tuple(l1 String), uid String),
         object Tuple(id String, ver String, type String),
-        edata Tuple (type String, mode String, pageid String, duration Float64, uri String, subtype String)
+        edata Tuple (id String, type String, mode String, pageid String, duration Float64, uri String, subtype String)
       ), 
       channel String, 
       pid String, 
@@ -57,6 +57,8 @@ class ClickhouseDispatcher extends winston.Transport {
     console.log("msg", msg)
     let msgData = JSON.parse(msg)
     console.log("msgData", msgData)
+
+    console.log("events", msgData.events[0])
 
     //inserting into clickhouse
     client.insert({
