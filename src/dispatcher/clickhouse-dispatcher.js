@@ -115,8 +115,38 @@ async function clickhouseQuery(payload, callback) {
 
   console.log("clickhouseQuery payload", payload.params)
 
-  if(payload.params.type == 'loginAttempt') {
-    var queryOptions = "SELECT COUNT(*) from telemetry WHERE events.context.env = 'login'";
+  if(payload.query.event == 'loginAttempt' && payload.query.interface == 'registration.portal') {
+    var queryOptions = "SELECT COUNT(*) from telemetry WHERE events.edata.pageid = 'sign-in' AND events.edata.id = 'login-auth-principal'  AND events.context.pdata.id = 'registration.portal'";
+  }
+  if (payload.query.event == 'loginSuccess' && payload.query.interface == 'registration.portal') {
+    var queryOptions = "SELECT COUNT(*) from telemetry WHERE events.edata.id = 'login-success' AND events.edata.pageid = 'digilocker-callback' AND events.context.pdata.id = 'registration.portal';"
+  }
+  if (payload.query.event == 'successUdiseLink' && payload.query.interface == 'registration.portal') {
+    var queryOptions = "SELECT COUNT(*) from telemetry WHERE events.edata.id = 'link-udise' AND events.context.pdata.id = 'registration.portal';"
+  }
+  if (payload.query.event == 'registerSuccess' && payload.query.interface == 'registration.portal') {
+    var queryOptions = "SELECT COUNT(*) from telemetry WHERE events.edata.id = 'registration-success' AND events.context.pdata.id = 'registration.portal';"
+  }
+  if (payload.query.event == 'claimApproveSuccess' && payload.query.interface == 'registration.portal') {
+    var queryOptions = "SELECT COUNT(*) from telemetry WHERE events.edata.id = 'claim-approval' AND events.context.pdata.id = 'registration.portal';"
+  }
+  if(payload.query.event == 'loginAttempt' && payload.query.interface == 'avasar.wallet') {
+    var queryOptions = "SELECT COUNT(*) from telemetry WHERE events.edata.id = 'login-sso'  AND events.context.pdata.id = 'avasar.wallet'";
+  }
+  if(payload.query.event == 'loginSuccess' && payload.query.interface == 'avasar.wallet') {
+    var queryOptions = "SELECT COUNT(*) from telemetry WHERE events.edata.id = 'login-success'  AND events.context.pdata.id = 'avasar.wallet'";
+  }
+  if(payload.query.event == 'registerSuccess' && payload.query.interface == 'avasar.wallet') {
+    var queryOptions = "SELECT COUNT(*) from telemetry WHERE events.edata.id = 'registration-success'  AND events.context.pdata.id = 'avasar.wallet'";
+  }
+  if(payload.query.event == 'downloadPdf' && payload.query.interface == 'avasar.wallet') {
+    var queryOptions = "SELECT COUNT(*) from telemetry WHERE events.edata.id = 'download-pdf'  AND events.context.pdata.id = 'avasar.wallet'";
+  }
+  if(payload.query.event == 'shareFile' && payload.query.interface == 'avasar.wallet') {
+    var queryOptions = "SELECT COUNT(*) from telemetry WHERE events.edata.id = 'share-file'  AND events.context.pdata.id = 'avasar.wallet'";
+  }
+  if(payload.query.event == 'downLoadJson' && payload.query.interface == 'avasar.wallet') {
+    var queryOptions = "SELECT COUNT(*) from telemetry WHERE events.edata.id = 'download-json'  AND events.context.pdata.id = 'avasar.wallet'";
   }
 
   client.query({

@@ -8,8 +8,8 @@ router.get('/health', (req, res) => telemetryService.health(req, res));
 
 router.get('/v1/getData', (req, res) => telemetryService.getData(req, res));
 
-router.get('/v1/getCount/:type', (req, res) => {
-  console.log("params", req.params.type)
+router.get('/v1/getCount', (req, res) => {
+  console.log("query", req.query.event)
   telemetryService.getCount(req, res)
 });
 
