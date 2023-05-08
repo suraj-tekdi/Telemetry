@@ -58,22 +58,39 @@ class ClickhouseDispatcher extends winston.Transport {
     let msgData = JSON.parse(msg)
     console.log("msgData", msgData)
 
-    console.log("events", msgData.events[0])
-
     //inserting into clickhouse
-    client.insert({
-      table: 'telemetry',
-      // structure should match the desired format, JSONEachRow in this example
-      values: [
-        { id: msgData.id, ver: msgData.ver, params: msgData.params, ets: msgData.ets, events: msgData.events[0], channel: msgData.channel, pid: msgData.pid, mid: msgData.mid, syncts: msgData.syncts }
-      ],
-      format: 'JSONEachRow',
-    }).then(() => {
-      console.log("data inserted successfully!", meta)
+    // client.insert({
+    //   table: 'telemetry',
+    //   // structure should match the desired format, JSONEachRow in this example
+    //   values: [
+    //     { id: msgData.id, ver: msgData.ver, params: msgData.params, ets: msgData.ets, events: msgData.events[0], channel: msgData.channel, pid: msgData.pid, mid: msgData.mid, syncts: msgData.syncts }
+    //   ],
+    //   format: 'JSONEachRow',
+    // }).then(() => {
+    //   console.log("data inserted successfully!", meta)
+    //   callback()
+    // }).catch((error) => {
+    //   console.log("error while inserting data", error);
+    // });
+
+    //inserting multiple data
+    let promises = [];
+    for (const iterator of msgData.events) {
+      console.log("iterator", iterator.eid)
+      promises.push(client.insert({
+        table: 'telemetry',
+        // structure should match the desired format, JSONEachRow in this example
+        values: [
+          { id: msgData.id, ver: msgData.ver, params: msgData.params, ets: msgData.ets, events: iterator, channel: msgData.channel, pid: msgData.pid, mid: msgData.mid, syncts: msgData.syncts }
+        ],
+        format: 'JSONEachRow',
+      }))
+    }
+
+    Promise.all(promises).then(() => {
+      console.log("data inserted successfully!")
       callback()
-    }).catch((error) => {
-      console.log("error while inserting data", error);
-    });
+    })
 
   }
 }
