@@ -87,9 +87,12 @@ class ClickhouseDispatcher extends winston.Transport {
       }))
     }
 
-    Promise.all(promises).then(() => {
+    Promise.all(promises)
+    .then(() => {
       console.log("data inserted successfully!")
       callback()
+    }).catch((err) => {
+      console.log("Unable to insert data", err)
     })
 
   }
