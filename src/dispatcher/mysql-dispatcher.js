@@ -19,18 +19,24 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
 
 // check if any issue with connection
-    if (err) throw err;
+    if (err) {
+        console.log("Mysql Connection Error",err)
+        process.exit(1);
+    } else {
+        if (connection) {
+            console.log("Connected!");
+        }
 
-console.log("Connected!");
 
-// At the first time run, This command will run to create table if table not exist
-var sql = "CREATE TABLE IF NOT EXISTS telemetry (id int(11) NOT NULL AUTO_INCREMENT,api_id varchar(255) NOT NULL,ver varchar(15) NOT NULL,params longtext NOT NULL CHECK (json_valid(params)),ets bigint(20) NOT NULL,events longtext NOT NULL CHECK(json_valid(events)),channel varchar(50) NOT NULL,pid varchar(50) NOT NULL,mid varchar(50) NOT NULL,syncts bigint(20) NOT NULL,PRIMARY KEY (id))";
+        // At the first time run, This command will run to create table if table not exist
+        var sql = "CREATE TABLE IF NOT EXISTS telemetry (id int(11) NOT NULL AUTO_INCREMENT,api_id varchar(255) NOT NULL,ver varchar(15) NOT NULL,params longtext NOT NULL CHECK (json_valid(params)),ets bigint(20) NOT NULL,events longtext NOT NULL CHECK(json_valid(events)),channel varchar(50) NOT NULL,pid varchar(50) NOT NULL,mid varchar(50) NOT NULL,syncts bigint(20) NOT NULL,PRIMARY KEY (id))";
 
-// for run table creation query
-connection.query(sql, function (err, result) {
-if (err) throw console.log("error while creating db");
-console.log(result.message);
-});
+        // for run table creation query
+        connection.query(sql, function (err, result) {
+            if (err) throw console.log("error while creating db");
+            console.log(result.message);
+            });
+        }
 });
 
 class MysqlDispatcher extends winston.Transport {

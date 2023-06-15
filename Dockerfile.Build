@@ -6,6 +6,8 @@ RUN mkdir -p /opt/telemetry
 ADD src /opt/telemetry/
 WORKDIR /opt/telemetry/
 RUN npm install
-CMD [ "node", "app.js" ]
 WORKDIR /opt
 CMD ["zip", "-r", "telemetry-service.zip", "telemetry"]
+RUN sleep 15
+WORKDIR /opt/telemetry/
+CMD ["node", "app.js", "&"]

@@ -9,3 +9,4 @@ mochawesome-report
 .DS_Store
 .idea
 data
+docker-compose-local.yml
