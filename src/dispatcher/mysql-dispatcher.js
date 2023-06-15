@@ -58,7 +58,8 @@ class MysqlDispatcher extends winston.Transport {
 
         // If sendAnonymousDataToALL is set yes data will send to ALL server.
         if (process.env.sendAnonymousDataToALL === 'yes' && process.env.UrlForAnonymousDataToALL != '') {
-            console.log('sendAnonymousDataToALL');
+
+            // used fetch to parallel logging to telemetry server for a anonymous data
             fetch(process.env.UrlForAnonymousDataToALL, {
                 method: 'POST',
                 body: JSON.stringify(msgData),
