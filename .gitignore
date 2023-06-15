@@ -8,3 +8,4 @@ mochawesome-report
 *.log
 .DS_Store
 .idea
+data
