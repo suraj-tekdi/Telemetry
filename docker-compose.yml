@@ -3,7 +3,7 @@ services:
   telemetry-service:
     image: telemetry-mysql:main
     ports:
-      - 9002:9002
+      - 9001:9001
     restart: always
     environment:
       MYSQL_HOST:
@@ -14,5 +14,7 @@ services:
       sendAnonymousDataToALL: 'yes'
       UrlForAnonymousDataToALL:
       telemetry_local_storage_type: 'mysql'
+      telemetry_local_storage_enabled: 'true'
       node_env: 'prod'
-      telemetry_service_port: 9002
+      telemetry_service_port: 9001
+      table_prefix:
