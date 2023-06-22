@@ -15,6 +15,7 @@ services:
       UrlForAnonymousDataToALL:
       telemetry_local_storage_type: 'mysql'
       telemetry_local_storage_enabled: 'true'
+      telemetry_mysql_log_enabled: 'true'
       node_env: 'prod'
       telemetry_service_port: 9001
       table_prefix:
