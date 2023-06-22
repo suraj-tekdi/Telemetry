@@ -5,7 +5,7 @@ const winston = require('winston');
 
 if (process.env.telemetry_local_storage_enabled === 'true' && process.env.telemetry_local_storage_type === 'clickhouse') {
   // connecting clickhouse db
-  const client = client_1.createClient({
+  var client = client_1.createClient({
     // host: process.env.CLICKHOUSE_HOST ?? 'http://localhost:8123',
     // username: process.env.CLICKHOUSE_USER ?? 'default',
     // password: process.env.CLICKHOUSE_PASSWORD ?? '1234',
