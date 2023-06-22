@@ -5,7 +5,7 @@ var mysql = require('mysql');
 const winston = require('winston');
 const fetch = require('node-fetch');
 
-if (process.env.telemetry_local_storage_enabled === 'true' && process.env.telemetry_local_storage_type === 'mysql') {
+if (process.env.telemetry_mysql_log_enabled === 'true' && process.env.telemetry_local_storage_type === 'mysql') {
     // create mysql connection
     var connection = mysql.createConnection({
         host: process.env.MYSQL_HOST,
@@ -53,7 +53,7 @@ class MysqlDispatcher extends winston.Transport {
 
         let promises = [];
 
-        if (process.env.telemetry_local_storage_enabled === 'true' && process.env.telemetry_local_storage_type === 'mysql') {
+        if (process.env.telemetry_mysql_log_enabled === 'true' && process.env.telemetry_local_storage_type === 'mysql') {
             var table_name = process.env.table_prefix + "_" + "telemetry";
             try {
                 for (const iterator of msgData.events) {
@@ -70,7 +70,7 @@ class MysqlDispatcher extends winston.Transport {
         Promise.all(promises)
             .then(() => {
 
-                if (process.env.telemetry_local_storage_enabled === 'true' && process.env.telemetry_local_storage_type === 'mysql') {
+                if (process.env.telemetry_mysql_log_enabled === 'true' && process.env.telemetry_local_storage_type === 'mysql') {
                     console.log("data inserted successfully!");
                 }
 
