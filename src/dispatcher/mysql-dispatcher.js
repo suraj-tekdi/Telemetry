@@ -78,11 +78,14 @@ class MysqlDispatcher extends winston.Transport {
                 if (process.env.sendAnonymousDataToALL === 'yes' && process.env.UrlForAnonymousDataToALL != '') {
 
                     // This will remove student data from ALL student data
-                    let anonymousEventsArr = msgData.events.map((event) => {
-                        if (event.eid !== "LOG" && event.edata.type !== "api_login_call") {
-                            event.context.uid = 'anonymous';
-                            return event;
+                    let anonymousEventsArr = msgData.events.filter(function(event) {
+                        if (event.eid === "LOG" && event.edata.type === "api_login_call") {
+                            return false; // skip
                         }
+                        return true;
+                    }).map((event) => {
+                        event.context.uid = 'anonymous';
+                        return event;
                     });
 
                     // anonymous data will be replaces msgData events which will added to ALL telemetry
