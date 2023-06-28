@@ -77,6 +77,16 @@ class MysqlDispatcher extends winston.Transport {
                 // If sendAnonymousDataToALL is set yes data will send to ALL server.
                 if (process.env.sendAnonymousDataToALL === 'yes' && process.env.UrlForAnonymousDataToALL != '') {
 
+                    // This will remove student data from ALL student data
+                    let anonymousEventsArr = msgData.events.map((event) => {
+                        if (event.eid !== "LOG" && event.edata.type !== "api_login_call") {
+                            event.context.uid = 'anonymous';
+                            return event;
+                        }
+                    });
+
+                    // anonymous data will be replaces msgData events which will added to ALL telemetry
+                    msgData.events = anonymousEventsArr;
                     // used fetch to parallel logging to telemetry server for a anonymous data
                     fetch(process.env.UrlForAnonymousDataToALL, {
                         method: 'POST',
