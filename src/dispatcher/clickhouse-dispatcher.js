@@ -31,7 +31,26 @@ if (process.env.telemetry_local_storage_enabled === 'true' && process.env.teleme
         actor Tuple(id String, type String),
         context Tuple(channel String, pdata Tuple(id String, ver String, pid String), env String, sid String, did String, cdata Array(Tuple(id String, type String)), rollup Tuple(l1 String), uid String),
         object Tuple(id String, ver String, type String),
-        edata Tuple (id String, type String, mode String, pageid String, duration Float64, uri String, subtype String)
+        edata Tuple (
+	        id String,
+	        type String,
+	        mode String,
+          pageid String,
+          duration Float64,
+          uri String,
+          subtype String,
+          target String,
+          values Tuple(
+            Tuple(original_text String),
+            Tuple(response_text String),
+            Tuple(response_correct_words_array Array(String)),
+            Tuple(response_incorrect_words_array Array(String)),
+            Tuple(response_word_array_result Array(String)),
+            Tuple(response_word_result String),
+            Tuple(accuracy_percentage Float64),
+            Tuple(duration UInt32)
+            )
+        )
       ),
       channel String,
       pid String,
