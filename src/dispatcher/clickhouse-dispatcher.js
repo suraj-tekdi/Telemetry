@@ -3,49 +3,70 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@clickhouse/client");
 const winston = require('winston');
 
-// connecting clickhouse db
-const client = client_1.createClient({
-  // host: process.env.CLICKHOUSE_HOST ?? 'http://localhost:8123',
-  // username: process.env.CLICKHOUSE_USER ?? 'default',
-  // password: process.env.CLICKHOUSE_PASSWORD ?? '1234',
-  host: process.env.CLICKHOUSE_HOST ,
-  username: process.env.CLICKHOUSE_USER ,
-  password: process.env.CLICKHOUSE_PASSWORD ,
-})
+if (process.env.telemetry_local_storage_enabled === 'true' && process.env.telemetry_local_storage_type === 'clickhouse') {
+  // connecting clickhouse db
+  var client = client_1.createClient({
+    // host: process.env.CLICKHOUSE_HOST ?? 'http://localhost:8123',
+    // username: process.env.CLICKHOUSE_USER ?? 'default',
+    // password: process.env.CLICKHOUSE_PASSWORD ?? '1234',
+    host: process.env.CLICKHOUSE_HOST,
+    username: process.env.CLICKHOUSE_USER,
+    password: process.env.CLICKHOUSE_PASSWORD,
+  })
 
-// creating schema & table
-client.exec({
-  query: `
+  // creating schema & table
+  client.exec({
+    query: `
     CREATE TABLE IF NOT EXISTS telemetry
     (
-      id String, 
-      ver String, 
-      params Tuple(msgid String), 
-      ets UInt64, 
+      id String,
+      ver String,
+      params Tuple(msgid String),
+      ets UInt64,
       events Tuple(
         eid String,
-        ets UInt64, 
-        ver String, 
+        ets UInt64,
+        ver String,
         mid String,
         actor Tuple(id String, type String),
         context Tuple(channel String, pdata Tuple(id String, ver String, pid String), env String, sid String, did String, cdata Array(Tuple(id String, type String)), rollup Tuple(l1 String), uid String),
         object Tuple(id String, ver String, type String),
-        edata Tuple (id String, type String, mode String, pageid String, duration Float64, uri String, subtype String)
-      ), 
-      channel String, 
-      pid String, 
-      mid String, 
+        edata Tuple (
+	        id String,
+	        type String,
+	        mode String,
+          pageid String,
+          duration Float64,
+          uri String,
+          subtype String,
+          target String,
+          values Tuple(
+            Tuple(original_text String),
+            Tuple(response_text String),
+            Tuple(response_correct_words_array Array(String)),
+            Tuple(response_incorrect_words_array Array(String)),
+            Tuple(response_word_array_result Array(String)),
+            Tuple(response_word_result String),
+            Tuple(accuracy_percentage Float64),
+            Tuple(duration UInt32)
+            )
+        )
+      ),
+      channel String,
+      pid String,
+      mid String,
       syncts UInt64
     )
     ENGINE MergeTree()
     ORDER BY (id)
   `,
-}).then(() => {
-  console.log("table created successfully!")
-}).catch((error) => {
-  console.log("error while creating db", error);
-});
+  }).then(() => {
+    console.log("table created successfully!")
+  }).catch((error) => {
+    console.log("error while creating db", error);
+  });
 
+}
 
 class ClickhouseDispatcher extends winston.Transport {
 
@@ -182,7 +203,6 @@ async function clickhouseQuery(payload, callback) {
   })
 
 }
-
 
 winston.transports.clickhouse = ClickhouseDispatcher;
 

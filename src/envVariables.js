@@ -1,10 +1,11 @@
 const os = require('os');
+require('dotenv').config();
 
 const envVariables = {
     level: process.env.telemetry_log_level || 'info',
     localStorageEnabled: process.env.telemetry_local_storage_enabled || 'true',
     telemetryProxyEnabled: process.env.telemetry_proxy_enabled,
-    dispatcher: process.env.telemetry_local_storage_type || 'clickhouse' ,
+    dispatcher: process.env.telemetry_local_storage_type || 'mysql' ,
     proxyURL: process.env.telemetry_proxy_url || '',
     proxyAuthKey: process.env.telemetry_proxy_auth_key,
     encodingType: process.env.telemetry_encoding_type,
@@ -19,6 +20,7 @@ const envVariables = {
     contactPoints: (process.env.telemetry_cassandra_contactpoints || 'localhost').split(','),
     cassandraTtl: process.env.telemetry_cassandra_ttl,
     port: process.env.telemetry_service_port || 9001,
-    threads: process.env.telemetry_service_threads || os.cpus().length
+    threads: process.env.telemetry_service_threads || os.cpus().length,
+    sendAnonymousDataToALL:process.env.sendAnonymousDataToALL || 'yes'
 }
 module.exports = envVariables;

@@ -4,7 +4,7 @@ const uuidv1 = require('uuid/v1'),
 config = require('../envVariables')
 
 
-// TODO: Make this efficient. Implementation to be similar to typesafe config. Right now one configuration holds 
+// TODO: Make this efficient. Implementation to be similar to typesafe config. Right now one configuration holds
 // together all supported transport configurations
 
 class TelemetryService {
@@ -110,7 +110,7 @@ class TelemetryService {
         this.dispatcher.getData(req.body, (err, data) => {
             if (err) {
                 console.log("error while fetching 112")
-                
+
             } else if (data) {
                 console.log("112")
                 res.status(200).json({
@@ -130,12 +130,11 @@ class TelemetryService {
             }
         })
     }
-
     getCount(req, res) {
         this.dispatcher.getCount(req, (err, data) => {
             if (err) {
                 console.log("error while fetching 137")
-                
+
             } else if (data) {
                 console.log("140")
                 res.status(200).json({

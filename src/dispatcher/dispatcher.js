@@ -3,6 +3,7 @@ require('winston-daily-rotate-file');
 require('./kafka-dispatcher');
 require('./cassandra-dispatcher');
 require('./clickhouse-dispatcher');
+require('./mysql-dispatcher');
 
 const getData = require('./clickhouse-dispatcher');
 const getCount = require('./clickhouse-dispatcher');
@@ -38,7 +39,11 @@ class Dispatcher {
             console.log("inside clickhouse")
             this.logger.add(winston.transports.clickhouse, this.options);
             console.log('clickhouse transport enabled !!!');
-        } else { // Log to console
+        } else if (this.options.dispatcher === 'mysql') {
+            console.log("inside mysql")
+            this.logger.add(winston.transports.mysql, this.options);
+            console.log('mysql transport enabled !!!');
+        }else { // Log to console
             console.log("inside else")
             this.options.dispatcher = 'console'
             const config = Object.assign({ json: true, stringify: (obj) => JSON.stringify(obj) }, this.options);

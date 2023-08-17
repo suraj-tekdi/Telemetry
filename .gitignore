@@ -8,3 +8,5 @@ mochawesome-report
 *.log
 .DS_Store
 .idea
+data
+docker-compose-local.yml
